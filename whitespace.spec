@@ -4,13 +4,14 @@
 #
 Name     : whitespace
 Version  : 1.0.0b8
-Release  : 3
+Release  : 4
 URL      : https://files.pythonhosted.org/packages/0e/db/4addd92b7f4b24673447073c5bd7c5fb288eed27f3e66d03609f5a498f56/whitespace-1.0.0b8.tar.gz
 Source0  : https://files.pythonhosted.org/packages/0e/db/4addd92b7f4b24673447073c5bd7c5fb288eed27f3e66d03609f5a498f56/whitespace-1.0.0b8.tar.gz
 Summary  : A Whitespace interpreter.
 Group    : Development/Tools
 License  : MIT
 Requires: whitespace-bin = %{version}-%{release}
+Requires: whitespace-license = %{version}-%{release}
 Requires: whitespace-python = %{version}-%{release}
 Requires: whitespace-python3 = %{version}-%{release}
 BuildRequires : buildreq-distutils3
@@ -18,15 +19,110 @@ BuildRequires : buildreq-distutils3
 %description
 Whitespace
 ==========
+
 .. image:: https://img.shields.io/pypi/v/whitespace.svg
-:target: https://pypi.org/project/whitespace/
+    :target: https://pypi.org/project/whitespace/
+
+An interpreter written in `Python <https://www.python.org/>`_ for the imperative, stack-based language called `Whitespace`_.
+
+Installation
+------------
+
+To install, simply use pip (or `pipenv`_):
+
+.. code-block:: bash
+
+    $ pip install whitespace
+
+Usage
+-----
+
+Let :code:`program.ws` be any `Whitespace`_ program. To execute it, type:
+
+.. code-block:: bash
+
+    $ whitespace program.ws
+
+You can find example `Whitespace`_ programs at `tests/fixtures <https://github.com/dwayne/whitespace-python/tree/master/tests/fixtures>`_.
+
+For example, here's the `factorial program <https://github.com/dwayne/whitespace-python/tree/master/tests/fixtures/fact.ws>`_:
+
+.. code-block:: bash
+
+    $ whitespace fact.ws
+    Enter a number: 40
+    40! = 815915283247897734345611269596115894272000000000
+
+Development
+-----------
+
+Recommended tools:
+
+ - `pyenv <https://github.com/pyenv/pyenv>`_
+ - `pipenv`_
+
+Clone the repository and install the dependencies:
+
+.. code-block:: bash
+
+    $ git clone git@github.com:dwayne/whitespace-python.git
+    $ cd whitespace-python
+    $ pipenv shell
+    $ pipenv install --dev
+
+You're now all set to begin development.
+
+Testing
+-------
+
+Tests are written using the built-in unit testing framework, `unittest <https://docs.python.org/3/library/unittest.html>`_.
+
+Run all tests.
+
+.. code-block:: bash
+
+    $ python -m unittest
+
+Run a specific test module.
+
+.. code-block:: bash
+
+    $ python -m unittest tests.test_parser
+
+Run a specific test case.
+
+.. code-block:: bash
+
+    $ python -m unittest tests.test_parser.ParserTestCase.test_it_parses_push
+
+References
+----------
+
+- `Whitespace tutorial <https://web.archive.org/web/20150618184706/http://compsoc.dur.ac.uk/whitespace/tutorial.php>`_
+
+Credits
+-------
+
+Thanks to `Edwin Brady <https://edwinb.wordpress.com/>`_ and Chris Morris for designing/developing this programming language; they are also developers of the `Idris <https://en.wikipedia.org/wiki/Idris_(programming_language)>`_ programming language.
+
+.. _Whitespace: https://en.wikipedia.org/wiki/Whitespace_(programming_language)
+.. _pipenv: https://github.com/pypa/pipenv
 
 %package bin
 Summary: bin components for the whitespace package.
 Group: Binaries
+Requires: whitespace-license = %{version}-%{release}
 
 %description bin
 bin components for the whitespace package.
+
+
+%package license
+Summary: license components for the whitespace package.
+Group: Default
+
+%description license
+license components for the whitespace package.
 
 
 %package python
@@ -42,6 +138,7 @@ python components for the whitespace package.
 Summary: python3 components for the whitespace package.
 Group: Default
 Requires: python3-core
+Provides: pypi(whitespace)
 
 %description python3
 python3 components for the whitespace package.
@@ -49,13 +146,14 @@ python3 components for the whitespace package.
 
 %prep
 %setup -q -n whitespace-1.0.0b8
+cd %{_builddir}/whitespace-1.0.0b8
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1571163900
+export SOURCE_DATE_EPOCH=1582902767
 # -Werror is for werrorists
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
@@ -71,6 +169,8 @@ python3 setup.py build
 %install
 export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/whitespace
+cp %{_builddir}/whitespace-1.0.0b8/LICENSE %{buildroot}/usr/share/package-licenses/whitespace/6b98a5fcaef636a9c7e6205864a8f229d92ca1dc
 python3 -tt setup.py build  install --root=%{buildroot}
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
@@ -82,6 +182,10 @@ echo ----[ mark ]----
 %files bin
 %defattr(-,root,root,-)
 /usr/bin/whitespace
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/whitespace/6b98a5fcaef636a9c7e6205864a8f229d92ca1dc
 
 %files python
 %defattr(-,root,root,-)
