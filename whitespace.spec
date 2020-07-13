@@ -4,7 +4,7 @@
 #
 Name     : whitespace
 Version  : 1.0.0b8
-Release  : 4
+Release  : 5
 URL      : https://files.pythonhosted.org/packages/0e/db/4addd92b7f4b24673447073c5bd7c5fb288eed27f3e66d03609f5a498f56/whitespace-1.0.0b8.tar.gz
 Source0  : https://files.pythonhosted.org/packages/0e/db/4addd92b7f4b24673447073c5bd7c5fb288eed27f3e66d03609f5a498f56/whitespace-1.0.0b8.tar.gz
 Summary  : A Whitespace interpreter.
